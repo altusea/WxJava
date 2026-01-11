@@ -1,9 +1,9 @@
 package com.github.binarywang.wxpay.v3;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 
 import java.io.IOException;
 
-public interface Validator {
+public interface ValidatorHC {
   boolean validate(CloseableHttpResponse response) throws IOException;
 }

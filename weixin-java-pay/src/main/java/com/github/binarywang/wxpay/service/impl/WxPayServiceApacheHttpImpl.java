@@ -336,6 +336,7 @@ public class WxPayServiceApacheHttpImpl extends BaseWxPayServiceImpl {
     return new StringEntity(requestStr, ContentType.create(mimeType, StandardCharsets.UTF_8));
     //return new StringEntity(new String(requestStr.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1));
   }
+
   private HttpClientBuilder createHttpClientBuilder(boolean useKey) throws WxPayException {
     HttpClientBuilder httpClientBuilder = HttpClients.custom();
     if (useKey) {

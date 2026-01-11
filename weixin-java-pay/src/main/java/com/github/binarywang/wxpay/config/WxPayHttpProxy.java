@@ -70,6 +70,4 @@ public class WxPayHttpProxy implements Serializable {
     this.httpProxyPassword = httpProxyPassword;
   }
 
-
-
 }
