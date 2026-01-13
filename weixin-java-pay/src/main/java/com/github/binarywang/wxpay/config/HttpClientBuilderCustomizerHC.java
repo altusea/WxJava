@@ -1,11 +1,11 @@
 package com.github.binarywang.wxpay.config;
 
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 
 /**
  * @author <a href="https://github.com/ifcute">dagewang</a>
  */
 @FunctionalInterface
-public interface HttpClientBuilderCustomizer {
+public interface HttpClientBuilderCustomizerHC {
   void customize(HttpClientBuilder builder);
 }

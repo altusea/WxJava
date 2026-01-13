@@ -10,21 +10,29 @@ import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.util.http.apache.ByteArrayResponseHandler;
 import me.chanjar.weixin.common.util.json.GsonParser;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.*;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.*;
-import org.apache.http.conn.ssl.DefaultHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.classic.methods.HttpDelete;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 
 import javax.net.ssl.SSLContext;
 import java.io.InputStream;
@@ -32,6 +40,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 微信支付请求实现类，apache httpconponents 实现.
@@ -326,11 +335,11 @@ public class WxPayServiceHttpComponentsImpl extends BaseWxPayServiceImpl {
       }
 
       // 使用代理服务器 需要用户认证的代理服务器
-      CredentialsProvider provider = new BasicCredentialsProvider();
+      BasicCredentialsProvider provider = new BasicCredentialsProvider();
       provider.setCredentials(new AuthScope(this.getConfig().getHttpProxyHost(),
           this.getConfig().getHttpProxyPort()),
         new UsernamePasswordCredentials(this.getConfig().getHttpProxyUsername(),
-          this.getConfig().getHttpProxyPassword()));
+          this.getConfig().getHttpProxyPassword() == null ? null : this.getConfig().getHttpProxyPassword().toCharArray()));
       httpClientBuilder.setDefaultCredentialsProvider(provider)
         .setProxy(new HttpHost(this.getConfig().getHttpProxyHost(), this.getConfig().getHttpProxyPort()));
     }
@@ -348,8 +357,8 @@ public class WxPayServiceHttpComponentsImpl extends BaseWxPayServiceImpl {
     httpPost.setEntity(createEntry(requestStr));
 
     httpPost.setConfig(RequestConfig.custom()
-      .setConnectionRequestTimeout(this.getConfig().getHttpConnectionTimeout())
-      .setConnectTimeout(this.getConfig().getHttpConnectionTimeout())
+      .setConnectionRequestTimeout(this.getConfig().getHttpConnectionTimeout(), TimeUnit.MILLISECONDS)
+      .setConnectTimeout(this.getConfig().getHttpConnectionTimeout(), TimeUnit.MILLISECONDS)
       .setSocketTimeout(this.getConfig().getHttpTimeout())
       .build());
 
@@ -361,8 +370,8 @@ public class WxPayServiceHttpComponentsImpl extends BaseWxPayServiceImpl {
     httpPost.setEntity(createEntry(requestStr, mimeType));
 
     httpPost.setConfig(RequestConfig.custom()
-      .setConnectionRequestTimeout(this.getConfig().getHttpConnectionTimeout())
-      .setConnectTimeout(this.getConfig().getHttpConnectionTimeout())
+      .setConnectionRequestTimeout(this.getConfig().getHttpConnectionTimeout(), TimeUnit.MILLISECONDS)
+      .setConnectTimeout(this.getConfig().getHttpConnectionTimeout(), TimeUnit.MILLISECONDS)
       .setSocketTimeout(this.getConfig().getHttpTimeout())
       .build());
 
