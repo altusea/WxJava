@@ -2,12 +2,11 @@ package com.github.binarywang.wxpay.util;
 
 import com.github.binarywang.wxpay.config.WxPayHttpProxy;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.HttpHost;
 
 /**
  * 微信支付 HTTP Proxy 工具类
@@ -15,7 +14,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
  * @author Long Yu
  * created on  2021-12-28 15:58:03
  */
-public class HttpProxyUtils {
+public class HttpProxyUtilsHC {
 
   /**
    * 配置 http 正向代理 可以实现内网服务通过代理调用接口
@@ -34,9 +33,10 @@ public class HttpProxyUtils {
       }
 
       // 使用代理服务器 需要用户认证的代理服务器
-      CredentialsProvider provider = new BasicCredentialsProvider();
+      BasicCredentialsProvider provider = new BasicCredentialsProvider();
       provider.setCredentials(new AuthScope(wxPayHttpProxy.getHttpProxyHost(), wxPayHttpProxy.getHttpProxyPort()),
-        new UsernamePasswordCredentials(wxPayHttpProxy.getHttpProxyUsername(), wxPayHttpProxy.getHttpProxyPassword()));
+        new UsernamePasswordCredentials(wxPayHttpProxy.getHttpProxyUsername(),
+          wxPayHttpProxy.getHttpProxyPassword() == null ? null : wxPayHttpProxy.getHttpProxyPassword().toCharArray()));
       httpClientBuilder.setDefaultCredentialsProvider(provider);
       httpClientBuilder.setProxy(new HttpHost(wxPayHttpProxy.getHttpProxyHost(), wxPayHttpProxy.getHttpProxyPort()));
     }
